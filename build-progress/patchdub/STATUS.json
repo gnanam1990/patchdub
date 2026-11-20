@@ -1,7 +1,7 @@
 {
   "project": "PatchDub",
   "packVersion": "1.0",
-  "testedSha": "757840d",
+  "testedSha": "acbc75d",
   "targetBranch": "devin/patchdub",
   "modules": [
     {

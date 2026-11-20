@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PatchDub console</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <header class="topbar">
+    <h1>PatchDub</h1>
+    <p class="tagline">Tamil subtitle edition maintenance</p>
+    <div id="identity" class="identity" aria-label="current actor"></div>
+  </header>
+
+  <div id="status" class="sr-status" role="status" aria-live="polite"></div>
+  <div id="alerts"></div>
+
+  <main id="main" tabindex="-1">
+    <!-- Sign-in / workspace picker -->
+    <section id="view-signin" class="panel">
+      <h2>Sign in</h2>
+      <p>Paste an actor token for your workspace. Roles: producer, editor, reviewer, distributor, operator.</p>
+      <form id="form-signin">
+        <label for="in-token">Actor token</label>
+        <input id="in-token" name="token" type="password" autocomplete="off" required>
+        <label for="in-workspace">Workspace ID</label>
+        <input id="in-workspace" name="workspace" required>
+        <button type="submit">Continue</button>
+      </form>
+      <details>
+        <summary>Create a demo workspace</summary>
+        <form id="form-bootstrap">
+          <label for="in-wsname">Studio name</label>
+          <input id="in-wsname" name="name" value="Demo Studio">
+          <button type="submit">Create workspace and producer</button>
+        </form>
+        <pre id="bootstrap-out" aria-live="polite"></pre>
+      </details>
+    </section>
+
+    <!-- Edition list -->
+    <section id="view-editions" class="panel" hidden>
+      <h2>Editions</h2>
+      <form id="form-edition">
+        <label for="in-title">Title</label>
+        <input id="in-title" name="title" required>
+        <button type="submit">New edition (en → ta)</button>
+      </form>
+      <ul id="edition-list" class="cardlist"></ul>
+    </section>
+
+    <!-- Case view -->
+    <section id="view-case" hidden>
+      <nav class="breadcrumbs" aria-label="case navigation">
+        <a href="#/">← Editions</a>
+        <span id="case-title"></span>
+      </nav>
+
+      <section class="panel" id="panel-import">
+        <h2>1 · Tracks</h2>
+        <div id="revision-list"></div>
+        <form id="form-import">
+          <fieldset>
+            <legend>Import a track</legend>
+            <label for="in-kind">Kind</label>
+            <select id="in-kind" name="kind">
+              <option value="source">source</option>
+              <option value="target">approved target (Tamil)</option>
+            </select>
+            <label for="in-label">Label</label>
+            <input id="in-label" name="label" required>
+            <label for="in-parent">Parent source revision (optional)</label>
+            <select id="in-parent" name="parent"><option value="">— none —</option></select>
+            <label for="in-vtt">WebVTT content</label>
+            <textarea id="in-vtt" name="content" rows="6" required></textarea>
+            <button type="submit">Import</button>
+          </fieldset>
+        </form>
+        <button id="btn-align" type="button" class="secondary">Compute alignment</button>
+      </section>
+
+      <section class="panel" id="panel-align">
+        <h2>2 · Alignment</h2>
+        <p id="align-summary"></p>
+        <table class="grid" id="align-table">
+          <caption class="sr-only">Cue mapping between previous and replacement source</caption>
+          <thead><tr>
+            <th scope="col">Group</th><th scope="col">Old cue(s)</th><th scope="col">New cue(s)</th>
+            <th scope="col">Kind</th><th scope="col">Reason</th><th scope="col">Action</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="panel-plan">
+        <h2>3 · Repair window &amp; bounded quote</h2>
+        <div id="plan-box"></div>
+        <form id="form-plan">
+          <label for="in-cap">Spend cap (minor units)</label>
+          <input id="in-cap" name="cap" type="number" min="0" value="4" required>
+          <label for="in-glossary">Glossary</label>
+          <select id="in-glossary" name="glossary"><option value="">— none —</option></select>
+          <button type="submit">Create plan</button>
+        </form>
+        <div id="quote-box" hidden>
+          <p id="quote-text"></p>
+          <p class="muted" id="quote-digest"></p>
+          <button id="btn-approve" type="button">Approve bounded quote</button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-review">
+        <h2>4 · Review</h2>
+        <p class="muted">Keyboard: <kbd>j</kbd>/<kbd>k</kbd> next/previous cue, <kbd>e</kbd> edit,
+          <kbd>s</kbd> save, <kbd>a</kbd> approve, <kbd>x</kbd> reject, <kbd>Esc</kbd> leave editor,
+          <kbd>?</kbd> help.</p>
+        <table class="grid" id="patch-table">
+          <caption class="sr-only">Patch review queue</caption>
+          <thead><tr>
+            <th scope="col">Cue</th><th scope="col">Timing</th><th scope="col">Change</th>
+            <th scope="col">Source</th><th scope="col">Target variant</th><th scope="col">Findings</th>
+            <th scope="col">Status</th><th scope="col">Cost</th><th scope="col">Actions</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="panel-export">
+        <h2>5 · Export</h2>
+        <div id="export-box"></div>
+        <button id="btn-draft" type="button" class="secondary">Generate draft preview</button>
+        <button id="btn-final" type="button">Generate approved export</button>
+        <div id="export-list"></div>
+      </section>
+
+      <section class="panel" id="panel-operator" hidden>
+        <h2>Operator queue</h2>
+        <div id="operator-box"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="dlg-resolve">
+    <form method="dialog" id="form-resolve">
+      <h3>Resolve mapping</h3>
+      <p id="resolve-desc"></p>
+      <label for="in-resolve-kind">Kind</label>
+      <select id="in-resolve-kind">
+        <option>unchanged</option><option>retime</option><option>edit</option>
+        <option>insertion</option><option>deletion</option>
+      </select>
+      <label for="in-resolve-reason">Reason</label>
+      <input id="in-resolve-reason" required>
+      <menu>
+        <button value="cancel" class="secondary">Cancel</button>
+        <button id="btn-resolve-ok" value="default">Resolve</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

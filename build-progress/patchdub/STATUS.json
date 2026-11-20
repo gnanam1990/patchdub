@@ -1,0 +1,102 @@
+{
+  "project": "PatchDub",
+  "packVersion": "1.0",
+  "testedSha": "79b80da",
+  "targetBranch": "devin/patchdub",
+  "modules": [
+    {
+      "id": "M01",
+      "title": "Revision and subtitle import",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m01-import.test.ts (exit 0, 4 pass)"
+      ],
+      "evidence": [
+        "test/m01-import.test.ts: T-001 idempotent import, T-002 line-level parse failure, bounded upload, tenant scope"
+      ],
+      "nextAction": "M02: verify alignment engine with T-003/T-004 tests"
+    },
+    {
+      "id": "M02",
+      "title": "Alignment and repair planning",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m02-align.test.ts (exit 0, 2 pass)"
+      ],
+      "evidence": [
+        "T-003 edits vs retime classification, T-004 ambiguous block + manual resolve"
+      ],
+      "nextAction": "done"
+    },
+    {
+      "id": "M03",
+      "title": "Scoped purchase and translation worker",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m03-purchase.test.ts (exit 0, 3 pass)"
+      ],
+      "evidence": [
+        "T-005 reserves 4 minor over 2 items + settled receipts, T-006 cap-3 zero dispatch concurrent, INV-03 stale version reject + idempotent replay"
+      ],
+      "nextAction": "done"
+    },
+    {
+      "id": "M04",
+      "title": "Terminology and timing checks",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m04-checks.test.ts (exit 0, 2 pass)"
+      ],
+      "evidence": [
+        "T-007 required-term resolves at new digest, T-008 dropped placeholder blocks approval"
+      ],
+      "nextAction": "done"
+    },
+    {
+      "id": "M05",
+      "title": "Reviewer workspace",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m05-review.test.ts (exit 0, 2 pass)",
+        "node scripts/browser-check.ts (exit 0, 23/23 browser checks)"
+      ],
+      "evidence": [
+        "T-009 resolve+approve digest-bound, T-010 stale-write 409; public/ console implements keyboard review",
+        "browser journey: sign-in, alignment repair map, bounded quote, worker settle, C5 flag, blocked export, keyboard j/k/e/s/a review, final export, 320px, reload persistence, distributor surface, sign-in error — build-progress/patchdub/evidence/browser/*.png"
+      ],
+      "nextAction": "done"
+    },
+    {
+      "id": "M06",
+      "title": "Export and billable intervals",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m06-export.test.ts (exit 0, 3 pass)"
+      ],
+      "evidence": [
+        "T-011 reparse: C4 at 12.5-15.5s, billable union 8s; T-012 final blocked, labeled draft allowed"
+      ],
+      "nextAction": "done"
+    },
+    {
+      "id": "M07",
+      "title": "Recovery and studio acceptance",
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m07-recovery.test.ts (exit 0, 2 pass)",
+        "node scripts/demo.ts (exit 0)"
+      ],
+      "evidence": [
+        "T-013 restore+sweep reconcile original receipt, no rebuy; T-014 unresolvable stays pending; demo end-to-end"
+      ],
+      "nextAction": "done"
+    }
+  ]
+}

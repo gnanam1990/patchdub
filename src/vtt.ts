@@ -59,19 +59,23 @@ export function parseVtt(content: string): ParsedCue[] {
     throw new VttError('missing WEBVTT header', 1);
   }
   i = 1;
-  // Skip header metadata until blank line
-  while (i < lines.length && lines[i].trim() !== '') i++;
+  // Skip header metadata until a blank line or the first cue block. A cue
+  // starts where a line contains '-->' or the next line does.
+  while (i < lines.length && lines[i].trim() !== '') {
+    if (lines[i].includes('-->') || lines[i + 1]?.includes('-->')) break;
+    i++;
+  }
   const cues: ParsedCue[] = [];
   while (i < lines.length) {
     while (i < lines.length && lines[i].trim() === '') i++;
     if (i >= lines.length) break;
-    // NOTE / STYLE / REGION blocks: skip until blank line (inert content)
+    // NOTE / STYLE / REGION blocks: skip until blank line or a cue start
+    // (inert content; some writers omit the separating blank line).
     if (/^(NOTE|STYLE|REGION)/.test(lines[i])) {
-      if (/^NOTE/.test(lines[i])) {
-        while (i < lines.length && lines[i].trim() !== '') i++;
-        continue;
+      while (i < lines.length && lines[i].trim() !== '') {
+        if (lines[i].includes('-->') || lines[i + 1]?.includes('-->')) break;
+        i++;
       }
-      while (i < lines.length && lines[i].trim() !== '') i++;
       continue;
     }
     let cueId: string | null = null;
@@ -135,12 +139,12 @@ export interface SerializeCue {
 }
 
 export function serializeVtt(cues: SerializeCue[], note?: string): string {
-  const parts: string[] = ['WEBVTT'];
-  if (note) parts.push(`NOTE ${note.replace(/[\r\n]+/g, ' ')}`);
-  parts.push('');
+  let header = 'WEBVTT\n';
+  if (note) header += `NOTE ${note.replace(/[\r\n]+/g, ' ')}\n`;
+  header += '\n';
   const body = cues.map((c) => {
     const head = c.cueId ? `${escapeCueId(c.cueId)}\n` : '';
     return `${head}${formatTimestamp(c.startMs)} --> ${formatTimestamp(c.endMs)}\n${escapeCueText(c.text)}`;
   });
-  return parts.join('\n') + body.join('\n\n') + '\n';
+  return header + body.join('\n\n') + '\n';
 }

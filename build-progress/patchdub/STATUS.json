@@ -59,29 +59,42 @@
     {
       "id": "M05",
       "title": "Reviewer workspace",
-      "state": "active",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Build accessible timeline navigation, editable target rows, reasoned resolve/reject actions, cost indicators and version-aware saves."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m05-review.test.ts (exit 0, 2 pass)"
+      ],
+      "evidence": [
+        "T-009 resolve+approve digest-bound, T-010 stale-write 409; public/ console implements keyboard review"
+      ],
+      "nextAction": "done"
     },
     {
       "id": "M06",
       "title": "Export and billable intervals",
-      "state": "pending",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Serialize valid UTF-8 WebVTT, ordered cues and a manifest with parent hashes, findings and accepted usage. Calculate billable changed seconds as an interval union."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m06-export.test.ts (exit 0, 3 pass)"
+      ],
+      "evidence": [
+        "T-011 reparse: C4 at 12.5-15.5s, billable union 8s; T-012 final blocked, labeled draft allowed"
+      ],
+      "nextAction": "done"
     },
     {
       "id": "M07",
       "title": "Recovery and studio acceptance",
-      "state": "pending",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Add an operator queue for unknown charges, artifact retention and a replayable studio demonstration through upload, review, purchase and export."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m07-recovery.test.ts (exit 0, 2 pass)",
+        "node scripts/demo.ts (exit 0)"
+      ],
+      "evidence": [
+        "T-013 restore+sweep reconcile original receipt, no rebuy; T-014 unresolvable stays pending; demo end-to-end"
+      ],
+      "nextAction": "done"
     }
   ]
 }

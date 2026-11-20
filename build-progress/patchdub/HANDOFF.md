@@ -11,7 +11,7 @@ Initial state: greenfield dedicated repo `patchdub`, branch `devin/patchdub`. Si
 
 ## Status
 
-- Target repository / branch / tested SHA: this checkout, `devin/patchdub`, `acbc75d` (module acceptance + browser journey verified, incl. clean-checkout browser run)
+- Target repository / branch / tested SHA: this checkout, `devin/patchdub`, `79b80da` (module acceptance, browser journey, clean-checkout run + visual pass verified)
 - Module states: M01–M07 accepted (see STATUS.json)
 - Completed behavior and evidence:
   - FR-01/INV-01: bounded WebVTT import, sha256 + artifact storage, idempotent retry, line-level errors, tenant scoping — `test/m01-import.test.ts` (T-001, T-002)

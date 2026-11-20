@@ -1,0 +1,9 @@
+# PatchDub · Demonstration script
+
+**Input and expected outcome.** Use six four-second cues, C1–C6, on a 24-second track. C2 and C5 change text. C4 moves to 12.5–15.5 s without a text change. Order translations for the two changed cues at an agreed price of 2 minor units per cue and a cap of 4. Exactly two translations are requested for total 4, C4 reuses approved Tamil and gets a timing check, and the union of paid updated intervals is 8 seconds. A required term missing in C5 holds export until the language reviewer approves its corrected digest. At a cap of 3, dispatch zero orders for this all-or-none plan.
+
+**Operator surfaces.** Show original and replacement source on a common timeline above the approved and proposed Tamil cues. Use text labels and keyboard controls for unchanged, retimed, changed and ambiguous. Expose cost ceiling and the revision plus glossary digest the approver is accepting. Distinguish an editorial preview from the approved download and preserve the selected cue after refresh.
+
+**Failure to demonstrate.** Key the translation order by provider, target locale, approved repair group, source revision and glossary digest. Record reservation and outbox in the same transaction. Resolve uncertain settlement by original reference before resubmitting. Rebuild previews from immutable inputs. Resume after a crash without losing accepted variants, issuing a second purchase, or reusing a review for a newer digest.
+
+Create a labeled, rights-cleared sample through the import or creation UI. Identify the seeded input separately from all real actions and receipts. Record with two appropriate role sessions where required, browser refresh and worker restart. Use a final export or read-only case view tied to the input revision; show any unsupported capabilities as such. Record actual outcomes next to expected outcomes in the target repo.

@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "status": "SPECIFICATION_ONLY",
+  "definitions": {
+    "functional": [
+      {
+        "id": "FR-01",
+        "title": "Revision and subtitle import",
+        "definition": "Create workspace-scoped episode storage, bounded WebVTT parsing, original hashes and previous-target associations. Preserve parsed cue text and millisecond timestamps."
+      },
+      {
+        "id": "FR-02",
+        "title": "Alignment and repair planning",
+        "definition": "Map old and new cues, record reasons and groups, distinguish retime, edit, insertion and deletion, and offer a manual disambiguation action."
+      },
+      {
+        "id": "FR-03",
+        "title": "Scoped purchase and translation worker",
+        "definition": "Price the full approved repair window, reserve the cap atomically, dispatch through the chosen Kite-compatible seller and record the rail and independently observed receipt. Keep a local adapter for deterministic contract testing."
+      },
+      {
+        "id": "FR-04",
+        "title": "Terminology and timing checks",
+        "definition": "Validate numbers, placeholders and glossary terms against the pinned revision. Check cue bounds, unintended overlap and display-time limits. Emit per-cue findings and source offsets."
+      },
+      {
+        "id": "FR-05",
+        "title": "Reviewer workspace",
+        "definition": "Build accessible timeline navigation, editable target rows, reasoned resolve/reject actions, cost indicators and version-aware saves."
+      },
+      {
+        "id": "FR-06",
+        "title": "Export and billable intervals",
+        "definition": "Serialize valid UTF-8 WebVTT, ordered cues and a manifest with parent hashes, findings and accepted usage. Calculate billable changed seconds as an interval union."
+      },
+      {
+        "id": "FR-07",
+        "title": "Recovery and studio acceptance",
+        "definition": "Add an operator queue for unknown charges, artifact retention and a replayable studio demonstration through upload, review, purchase and export."
+      }
+    ],
+    "nonfunctional": [
+      {
+        "id": "NFR-01",
+        "title": "Replayable evidence",
+        "definition": "A reviewer can reproduce the outcome from the exact input revision, actor scope, persisted decision and redacted evidence reference after a process restart."
+      }
+    ],
+    "invariants": [
+      {
+        "id": "INV-01",
+        "title": "Revision and subtitle import",
+        "definition": "An upload retry with the same identity binds to one revision."
+      },
+      {
+        "id": "INV-02",
+        "title": "Alignment and repair planning",
+        "definition": "A low-confidence match cannot silently carry forward an approved target."
+      },
+      {
+        "id": "INV-03",
+        "title": "Scoped purchase and translation worker",
+        "definition": "A quote or stale plan cannot authorize a new or more expensive order."
+      },
+      {
+        "id": "INV-04",
+        "title": "Terminology and timing checks",
+        "definition": "A translator response alone cannot clear an unresolved required-term finding."
+      },
+      {
+        "id": "INV-05",
+        "title": "Reviewer workspace",
+        "definition": "An approval belongs to one reviewer, one digest and one workspace."
+      },
+      {
+        "id": "INV-06",
+        "title": "Export and billable intervals",
+        "definition": "Export preserves unaffected approved target text; overlapping paid intervals count once."
+      },
+      {
+        "id": "INV-07",
+        "title": "Recovery and studio acceptance",
+        "definition": "Restart and replay cannot double-buy a translation or expose another studio's subtitles."
+      }
+    ]
+  },
+  "tests": [
+    {
+      "id": "T-001",
+      "title": "Revision and subtitle import • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-002",
+      "title": "Revision and subtitle import • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-003",
+      "title": "Alignment and repair planning • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-004",
+      "title": "Alignment and repair planning • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-005",
+      "title": "Scoped purchase and translation worker • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-006",
+      "title": "Scoped purchase and translation worker • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-007",
+      "title": "Terminology and timing checks • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-008",
+      "title": "Terminology and timing checks • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-009",
+      "title": "Reviewer workspace • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-010",
+      "title": "Reviewer workspace • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-011",
+      "title": "Export and billable intervals • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-012",
+      "title": "Export and billable intervals • failure boundary",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-013",
+      "title": "Recovery and studio acceptance • expected behavior",
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "T-014",
+      "title": "Recovery and studio acceptance • failure boundary",
+      "status": "NOT_RUN"
+    }
+  ],
+  "modules": [
+    {
+      "id": "M01",
+      "name": "Revision and subtitle import",
+      "file": "prompts/M01.md",
+      "requirements": [
+        "FR-01"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-01"
+      ],
+      "tests": [
+        "T-001",
+        "T-002"
+      ],
+      "dependsOn": [],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M02",
+      "name": "Alignment and repair planning",
+      "file": "prompts/M02.md",
+      "requirements": [
+        "FR-02"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-02"
+      ],
+      "tests": [
+        "T-003",
+        "T-004"
+      ],
+      "dependsOn": [
+        "M01"
+      ],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M03",
+      "name": "Scoped purchase and translation worker",
+      "file": "prompts/M03.md",
+      "requirements": [
+        "FR-03"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-03"
+      ],
+      "tests": [
+        "T-005",
+        "T-006"
+      ],
+      "dependsOn": [
+        "M02"
+      ],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M04",
+      "name": "Terminology and timing checks",
+      "file": "prompts/M04.md",
+      "requirements": [
+        "FR-04"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-04"
+      ],
+      "tests": [
+        "T-007",
+        "T-008"
+      ],
+      "dependsOn": [
+        "M03"
+      ],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M05",
+      "name": "Reviewer workspace",
+      "file": "prompts/M05.md",
+      "requirements": [
+        "FR-05"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-05"
+      ],
+      "tests": [
+        "T-009",
+        "T-010"
+      ],
+      "dependsOn": [
+        "M04"
+      ],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M06",
+      "name": "Export and billable intervals",
+      "file": "prompts/M06.md",
+      "requirements": [
+        "FR-06"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-06"
+      ],
+      "tests": [
+        "T-011",
+        "T-012"
+      ],
+      "dependsOn": [
+        "M05"
+      ],
+      "status": "NOT_RUN"
+    },
+    {
+      "id": "M07",
+      "name": "Recovery and studio acceptance",
+      "file": "prompts/M07.md",
+      "requirements": [
+        "FR-07"
+      ],
+      "nonfunctional": [
+        "NFR-01"
+      ],
+      "invariants": [
+        "INV-07"
+      ],
+      "tests": [
+        "T-013",
+        "T-014"
+      ],
+      "dependsOn": [
+        "M06"
+      ],
+      "status": "NOT_RUN"
+    }
+  ]
+}

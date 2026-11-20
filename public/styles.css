@@ -175,7 +175,9 @@ kbd {
 
 @media (max-width: 480px) {
   table.grid { display: block; overflow-x: auto; }
+  .panel { overflow-x: auto; }
   .topbar { flex-wrap: wrap; }
+  .topbar .tagline, .topbar .identity { min-width: 0; overflow-wrap: anywhere; }
 }
 
 @media (prefers-reduced-motion: reduce) {

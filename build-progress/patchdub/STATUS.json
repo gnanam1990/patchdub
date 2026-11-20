@@ -62,10 +62,12 @@
       "state": "accepted",
       "owner": "devin-local",
       "commands": [
-        "node --test test/m05-review.test.ts (exit 0, 2 pass)"
+        "node --test test/m05-review.test.ts (exit 0, 2 pass)",
+        "node scripts/browser-check.ts (exit 0, 23/23 browser checks)"
       ],
       "evidence": [
-        "T-009 resolve+approve digest-bound, T-010 stale-write 409; public/ console implements keyboard review"
+        "T-009 resolve+approve digest-bound, T-010 stale-write 409; public/ console implements keyboard review",
+        "browser journey: sign-in, alignment repair map, bounded quote, worker settle, C5 flag, blocked export, keyboard j/k/e/s/a review, final export, 320px, reload persistence, distributor surface, sign-in error — build-progress/patchdub/evidence/browser/*.png"
       ],
       "nextAction": "done"
     },

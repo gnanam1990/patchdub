@@ -174,12 +174,20 @@ function classifyPair(groupKey: string, oc: CueRow, nc: CueRow, evidence: string
 }
 
 export function listAlignment(db: DB, newRevisionId: string) {
+  const cueInfo = db.prepare('SELECT id, cue_id, seq, start_ms, end_ms FROM cues WHERE id = ?');
+  const hydrate = (ids: string[]) => ids.map((id) => cueInfo.get(id) ?? { id });
   return (db.prepare('SELECT * FROM alignments WHERE new_revision_id = ? ORDER BY group_key')
-    .all(newRevisionId) as Record<string, unknown>[]).map((row) => ({
-      ...row,
-      old_cue_ids: JSON.parse(row.old_cue_ids as string),
-      new_cue_ids: JSON.parse(row.new_cue_ids as string),
-    }));
+    .all(newRevisionId) as Record<string, unknown>[]).map((row) => {
+      const oldIds = JSON.parse(row.old_cue_ids as string) as string[];
+      const newIds = JSON.parse(row.new_cue_ids as string) as string[];
+      return {
+        ...row,
+        old_cue_ids: oldIds,
+        new_cue_ids: newIds,
+        old_cues: hydrate(oldIds),
+        new_cues: hydrate(newIds),
+      };
+    });
 }
 
 export function resolveAlignmentGroup(

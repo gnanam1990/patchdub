@@ -41,6 +41,9 @@ export function listPatchesForEdition(db: DB, editionId: string) {
     `SELECT p.id, p.group_key, p.new_cue_id, p.change_kind, p.status, p.expected_version,
             p.variant_text IS NOT NULL AS has_variant, p.variant_hash, p.approved_digest,
             p.start_ms, p.end_ms, p.source_text,
+            COALESCE((SELECT pi.price_minor FROM plan_items pi
+              WHERE pi.plan_id = p.plan_id AND pi.new_cue_id = p.new_cue_id), 0) AS price_minor,
+            (SELECT c.cue_id FROM cues c WHERE c.id = p.new_cue_id) AS cue_label,
             (SELECT COUNT(*) FROM findings f WHERE f.patch_id = p.id AND f.status = 'open') AS open_findings
      FROM patches p WHERE p.edition_id = ? ORDER BY p.start_ms`,
   ).all(editionId));
@@ -88,6 +91,9 @@ export function reviewPatch(
     const verdict = str(body, 'verdict');
     if (verdict !== 'approve' && verdict !== 'reject') {
       throw new ApiError(400, 'invalid_verdict', 'verdict must be approve or reject');
+    }
+    if (verdict === 'reject' && !str(body, 'reason')) {
+      throw new ApiError(400, 'reason_required', 'a reason is required to reject');
     }
     const digest = str(body, 'digest');
     if (digest !== patch.variant_hash) {

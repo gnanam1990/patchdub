@@ -96,6 +96,11 @@ async function showEditions() {
 
 async function showCase(editionId, patchId) {
   show('#view-case');
+  if (!state.me) {
+    const { me, workspace } = await api('GET', `/api/workspaces/${state.workspaceId}`);
+    state.me = me;
+    $('#identity').textContent = `${me.name} (${me.role}) · ${workspace.name}`;
+  }
   const data = await api('GET', `/api/editions/${editionId}/case`);
   state.caseData = data;
   state.selectedPatch = patchId || state.selectedPatch;
@@ -144,11 +149,9 @@ function renderAlignment(data) {
   $('#align-summary').textContent = data.alignment.length
     ? `${data.alignment.length} group(s); ${data.unresolvedGroups} need manual review.`
     : 'No alignment yet — import a replacement source with a parent, then compute.';
-  const cueLabel = (id) => {
-    const rev = data.revisions.find(() => true);
-    void rev;
-    return id.slice(0, 12) + '…';
-  };
+  const cueLabel = (c) => c
+    ? `${c.cue_id || 'seq ' + (c.seq + 1)} · ${fmtMs(c.start_ms)}–${fmtMs(c.end_ms)}`
+    : '—';
   for (const g of data.alignment) {
     const actionCell = el('td');
     if (g.status === 'needs_review') {
@@ -160,8 +163,8 @@ function renderAlignment(data) {
     }
     tbody.append(el('tr', {}, [
       el('td', { text: g.group_key }),
-      el('td', { class: 'mono', text: g.old_cue_ids.map(cueLabel).join(', ') || '—' }),
-      el('td', { class: 'mono', text: g.new_cue_ids.map(cueLabel).join(', ') || '—' }),
+      el('td', { text: (g.old_cues || []).map(cueLabel).join(', ') || '—' }),
+      el('td', { text: (g.new_cues || []).map(cueLabel).join(', ') || '—' }),
       el('td', {}, badge(g.kind)),
       el('td', { text: g.reason }),
       actionCell,
@@ -199,6 +202,17 @@ function latestSourceRevision() {
 async function renderPlan(data) {
   const box = $('#plan-box');
   box.replaceChildren();
+  // Populate the glossary picker so a plan can pin a term base.
+  try {
+    const { glossaries } = await api('GET', `/api/workspaces/${state.workspaceId}/glossaries`);
+    const sel = $('#in-glossary');
+    const prev = sel.value;
+    sel.replaceChildren(el('option', { value: '', text: '— none —' }));
+    for (const g of glossaries) {
+      sel.append(el('option', { value: g.id, text: `${g.name} (${g.digest.slice(0, 10)}…)` }));
+    }
+    sel.value = prev;
+  } catch { /* glossary list is optional */ }
   const plans = data.plans || [];
   const latest = plans[plans.length - 1];
   if (latest) {
@@ -259,28 +273,42 @@ function renderPatches(data) {
     const openF = p.open_findings;
     const variant = el('textarea', { rows: '2', 'aria-label': `target variant for ${p.group_key}` });
     variant.value = '';
+    // Inside the editor: Escape returns to cue navigation, Ctrl/Cmd+S saves.
+    variant.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); tr.focus(); }
+      else if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        saveVariant(p, variant.value);
+      }
+      e.stopPropagation();
+    });
 
     const findingsCell = el('td');
     const actions = el('td');
-    const save = el('button', { type: 'button', class: 'secondary', text: 'Save (s)' });
-    save.addEventListener('click', () => saveVariant(p, variant.value));
-    const approve = el('button', { type: 'button', class: 'secondary', text: 'Approve (a)' });
-    approve.addEventListener('click', () => reviewPatch(p, 'approve', variant.value));
-    const reject = el('button', { type: 'button', class: 'secondary', text: 'Reject (x)' });
-    reject.addEventListener('click', () => reviewPatch(p, 'reject', variant.value));
-    const reason = el('input', { type: 'text', placeholder: 'reason', 'aria-label': 'review reason' });
-    actions.append(save, approve, reject, reason);
-    actions.dataset.role = 'actions';
+    const canReview = state.me?.role === 'reviewer';
+    if (canReview) {
+      const save = el('button', { type: 'button', class: 'secondary', text: 'Save (s)' });
+      save.addEventListener('click', () => saveVariant(p, variant.value));
+      const approve = el('button', { type: 'button', class: 'secondary', text: 'Approve (a)' });
+      approve.addEventListener('click', () => reviewPatch(p, 'approve', variant.value));
+      const reject = el('button', { type: 'button', class: 'secondary', text: 'Reject (x)' });
+      reject.addEventListener('click', () => reviewPatch(p, 'reject', variant.value));
+      const reason = el('input', { type: 'text', placeholder: 'reason', 'aria-label': 'review reason' });
+      actions.append(save, approve, reject, reason);
+    } else {
+      actions.append(el('span', { class: 'muted', text: 'reviewer only' }));
+      variant.readOnly = true;
+    }
 
     tr.append(
-      el('td', { class: 'mono', text: p.group_key }),
+      el('td', { text: `${p.cue_label || p.group_key}` }),
       el('td', { text: `${fmtMs(p.start_ms)}–${fmtMs(p.end_ms)}` }),
       el('td', {}, badge(p.change_kind)),
       el('td', { text: p.source_text }),
       el('td', {}, variant),
       findingsCell,
       el('td', {}, badge(p.status)),
-      el('td', { text: p.change_kind === 'retime' ? '0' : '2' }),
+      el('td', { text: String(p.price_minor) }),
       actions,
     );
     tbody.append(tr);
@@ -354,19 +382,35 @@ function renderExports(data) {
       ? 'Alignment resolved. Final export requires zero open findings, all changed patches approved and purchases settled.'
       : `${data.unresolvedGroups} alignment group(s) still need review.`,
   }));
+  const isDistributor = state.me?.role === 'distributor';
+  $('#btn-draft').hidden = isDistributor;
+  $('#btn-final').hidden = isDistributor;
   const ul = el('ul', { class: 'cardlist' });
   for (const x of data.exports.slice().reverse()) {
+    if (isDistributor && x.kind !== 'final') continue; // drafts are not for distributors
+    const link = el('a', { href: '#', text: `${x.id.slice(0, 14)}…` });
     ul.append(el('li', {}, [
       badge(x.kind), ' ',
-      el('a', { href: '#', text: `${x.id.slice(0, 14)}…` , onclick: '' }),
+      link,
       el('span', { class: 'mono', text: ` ${x.artifact_hash.slice(0, 12)}…` }),
       el('span', { class: 'muted', text: ` ${x.created_at.slice(0, 19)}` }),
     ]));
-    ul.lastChild.querySelector('a').addEventListener('click', async (e) => {
+    link.addEventListener('click', async (e) => {
       e.preventDefault();
-      window.open(`/api/exports/${x.id}/artifact`, '_blank');
-      const man = await api('GET', `/api/exports/${x.id}/manifest`);
-      alertBox(`Billable: ${man.usage.billableSeconds}s over ${man.usage.paidItems} item(s), ${man.usage.totalMinor} minor units`, 'info');
+      try {
+        // Authorized download (window.open cannot send the actor token).
+        const res = await fetch(`/api/exports/${x.id}/artifact`, {
+          headers: { authorization: `Bearer ${state.token}` },
+        });
+        if (!res.ok) throw new Error(`download failed: HTTP ${res.status}`);
+        const blob = await res.blob();
+        const a = el('a', { href: URL.createObjectURL(blob), download: `${x.id}.vtt` });
+        document.body.append(a);
+        a.click();
+        a.remove();
+        const man = await api('GET', `/api/exports/${x.id}/manifest`);
+        alertBox(`Billable: ${man.usage.billableSeconds}s over ${man.usage.paidItems} item(s), ${man.usage.totalMinor} minor units`, 'info');
+      } catch (err) { alertBox(err.message); }
     });
   }
   list.append(ul);
@@ -498,7 +542,7 @@ document.addEventListener('keydown', (e) => {
       break;
     }
     case '?': {
-      alertBox('Keys: j/k move between cues, e edit variant, s save, a approve, x reject', 'info');
+      alertBox('Keys: j/k move between cues, e edit variant, s save, a approve, x reject; Esc leaves the editor', 'info');
       break;
     }
   }

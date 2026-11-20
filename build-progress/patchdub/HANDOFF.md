@@ -1,20 +1,28 @@
 # PatchDub · Session handoff
 
-Initial state: greenfield dedicated repo `patchdub`, branch `devin/patchdub`. Single implementation agent (local SWE-2 High). No prior progress existed.
+Initial state: greenfield dedicated repo `patchdub`, branch `devin/patchdub`. Single implementation agent (local SWE-2 High). No prior progress existed. **All seven modules are implemented and verified locally at tested SHA `75cf96c`.**
 
 ## Stack decision (recorded 2026-11-20)
 
 - Greenfield target; TDD proposes "typed HTTP application, PostgreSQL, supervised worker, role-aware web console".
-- No PostgreSQL server is running locally (`pg_isready` → no response) and npm access is out of scope, so the build uses **Node 22 + TypeScript (native type stripping), node:http, node:sqlite with versioned SQL migrations, node:test**. Zero external dependencies. SQLite supplies the same transactional-outbox and compare-and-set guarantees locally; the DB layer is isolated in `src/db.ts` so a Postgres port is a storage swap.
-- Live Kite rail unavailable in this run (no authority for paid calls): the seller boundary is `LocalSellerAdapter` (`src/provider.ts`, rail `local-emulator`) with a persistent SQLite order book so receipts survive restarts. Exact missing proof: an operator-authorized Kite seller endpoint + settled live receipt. All paid outcomes are labeled `local-emulator` and kept separately identifiable.
-- Web console: static accessible UI in `public/` served by the API (built in M05).
+- No PostgreSQL server runs locally (`pg_isready` → no response) and npm installs are out of scope, so the build uses **Node 22 + TypeScript (native type stripping), node:http, node:sqlite with versioned SQL migrations (`migrations/`), node:test**. Zero external dependencies. `src/db.ts` isolates storage; a Postgres port is a storage swap with identical transaction semantics.
+- **Live Kite rail unavailable in this run** (no authority for paid calls; no operator-authorized seller endpoint). The seller boundary is `LocalSellerAdapter` (`src/provider.ts`, rail `local-emulator`), a deterministic emulator whose order book persists in SQLite so receipts survive restarts and can be reconciled by original reference. **Exact missing proof:** an operator-authorized Kite seller endpoint + a settled live receipt on a real rail. All paid outcomes are labeled `local-emulator` and kept separately identifiable in `purchases.rail` and export manifests.
+- Console: static accessible UI in `public/` (keyboard review: j/k/e/s/a/x, aria-live announcements, hash-preserved cue selection). Served by the API. Browser-rendered proof at 320px not yet captured — no headless browser in this environment; keyboard path is exercised via the same API calls the UI makes.
 
 ## Status
 
-- Target repository / branch / tested SHA: this checkout, `devin/patchdub`
-- Current module and owner: M02 next; M01 implemented
-- Completed behavior and redacted evidence path: workspace/actor/edition bootstrap, bounded WebVTT import with sha256 + artifact storage, idempotent retry (INV-01), line-level parse errors, tenant-scoped reads. Evidence: `node --test test/m01-import.test.ts` → 4 pass / 0 fail.
-- Commands, exit codes and tested environment: `node --test test/` on Node v22.23.1, macOS arm64. Exit 0.
-- External dependencies and decisions: see stack decision above; consult KITE-AND-PROVIDERS.md.
-- First next action: run `node --test test/` then continue with M02 alignment (`src/align.ts`, `src/plans.ts` are already written — verify with test/m02 test file).
-- Next agent must reproduce: `node --test test/m01-import.test.ts`
+- Target repository / branch / tested SHA: this checkout, `devin/patchdub`, `75cf96c`
+- Module states: M01–M07 accepted (see STATUS.json)
+- Completed behavior and evidence:
+  - FR-01/INV-01: bounded WebVTT import, sha256 + artifact storage, idempotent retry, line-level errors, tenant scoping — `test/m01-import.test.ts` (T-001, T-002)
+  - FR-02/INV-02: alignment classifies unchanged/retime/edit/insertion/deletion, ambiguous groups open review before quote approval, no low-confidence carry-forward — `test/m02-align.test.ts` (T-003, T-004)
+  - FR-03/INV-03: atomic cap reservation + patches + reserved purchases + outbox in one tx; all-or-none over cap; idempotent replay; stale-version rejection — `test/m03-purchase.test.ts` (T-005, T-006, INV-03)
+  - FR-04/INV-04: number/placeholder/required-term + bounds/overlap/display-rate checks; findings resolve only at a passing variant digest — `test/m04-checks.test.ts` (T-007, T-008)
+  - FR-05/INV-05: If-Match versioned edits and digest-bound approve/reject; stale-write 409 — `test/m05-review.test.ts` (T-009, T-010)
+  - FR-06/INV-06: gated final vs labeled draft export, manifest (parent hashes, findings, usage, receipts), billable interval union — `test/m06-export.test.ts` (T-011, T-012)
+  - FR-07/INV-07: durable dispatch→verify split, restored-DB sweep, operator reconcile by original ref, no repurchase; `scripts/demo.ts` replayable demo — `test/m07-recovery.test.ts` (T-013, T-014)
+  - Reference acceptance end to end — `test/e2e-acceptance.test.ts`
+- Commands, exit codes, tested environment: `node --test 'test/*.test.ts'` → **20 pass / 0 fail**, exit 0; clean-checkout proof via `git archive HEAD | tar -x` into an empty dir → same result; `node scripts/demo.ts` → full journey exit 0. Node v22.23.1, macOS arm64.
+- External dependencies and decisions: Kite rail (above). No paid calls, cloud sessions, pushes, PRs or deployments performed — per run constraints.
+- First next action: none for local scope. To extend: swap `LocalSellerAdapter` for an authorized Kite seller route (fail-closed session-bound execution per KITE-AND-PROVIDERS.md), wire `worker-main.ts` + `server.ts` to production env, and capture the 320px keyboard browser proof.
+- Next agent must reproduce: `node --test 'test/*.test.ts'` at SHA `75cf96c` → 20 pass.

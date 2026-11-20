@@ -157,7 +157,7 @@ export function approvePlan(db: DB, actor: Actor, planId: string, body: Record<s
         db.prepare(`INSERT INTO patches(id,workspace_id,edition_id,plan_id,group_key,new_cue_id,change_kind,
           source_text,context,glossary_digest,expected_version,status,variant_text,variant_hash,
           approved_by,approved_digest,start_ms,end_ms,created_at,updated_at)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
           .run(patchId, actor.workspace_id, plan.edition_id, planId, item.group_key, cue.id,
             'retime', cue.source_text, JSON.stringify(context), plan.glossary_digest,
             1, 'reuse_checked', cue.approved_target_text, null, null, null,

@@ -20,34 +20,46 @@
     {
       "id": "M02",
       "title": "Alignment and repair planning",
-      "state": "active",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Map old and new cues, record reasons and groups, distinguish retime, edit, insertion and deletion, and offer a manual disambiguation action."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m02-align.test.ts (exit 0, 2 pass)"
+      ],
+      "evidence": [
+        "T-003 edits vs retime classification, T-004 ambiguous block + manual resolve"
+      ],
+      "nextAction": "done"
     },
     {
       "id": "M03",
       "title": "Scoped purchase and translation worker",
-      "state": "pending",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Price the full approved repair window, reserve the cap atomically, dispatch through the chosen Kite-compatible seller and record the rail and independently observed receipt. Keep a local adapter for deterministic contract testing."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m03-purchase.test.ts (exit 0, 3 pass)"
+      ],
+      "evidence": [
+        "T-005 reserves 4 minor over 2 items + settled receipts, T-006 cap-3 zero dispatch concurrent, INV-03 stale version reject + idempotent replay"
+      ],
+      "nextAction": "done"
     },
     {
       "id": "M04",
       "title": "Terminology and timing checks",
-      "state": "pending",
-      "owner": null,
-      "commands": [],
-      "evidence": [],
-      "nextAction": "Validate numbers, placeholders and glossary terms against the pinned revision. Check cue bounds, unintended overlap and display-time limits. Emit per-cue findings and source offsets."
+      "state": "accepted",
+      "owner": "devin-local",
+      "commands": [
+        "node --test test/m04-checks.test.ts (exit 0, 2 pass)"
+      ],
+      "evidence": [
+        "T-007 required-term resolves at new digest, T-008 dropped placeholder blocks approval"
+      ],
+      "nextAction": "done"
     },
     {
       "id": "M05",
       "title": "Reviewer workspace",
-      "state": "pending",
+      "state": "active",
       "owner": null,
       "commands": [],
       "evidence": [],

@@ -138,3 +138,13 @@ async function workspaceId(ctx: TestCtx): Promise<string> {
   const rows = ctx.db.prepare('SELECT id FROM workspaces ORDER BY created_at LIMIT 1').all() as { id: string }[];
   return rows[0].id;
 }
+
+/** Tick the worker until the outbox drains (or maxTicks). */
+export async function drainWorker(ctx: TestCtx, maxTicks = 10): Promise<void> {
+  const { runWorkerTick } = await import('../src/worker.ts');
+  for (let i = 0; i < maxTicks; i++) {
+    const pending = ctx.db.prepare("SELECT COUNT(*) n FROM outbox WHERE status = 'pending'").get() as { n: number };
+    if (pending.n === 0) break;
+    runWorkerTick(ctx.db, ctx.adapter);
+  }
+}

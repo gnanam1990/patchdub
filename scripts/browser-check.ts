@@ -178,10 +178,12 @@ if (!chrome) {
   process.exit(2);
 }
 
-const dataDir = mkdtempSync(join(ROOT, 'data', 'browser-check-data-'));
-const profileDir = mkdtempSync(join(ROOT, 'data', 'browser-check-profile-'));
+// data/ is gitignored and absent on a clean checkout — create it first.
+const scratchDir = join(ROOT, 'data');
+mkdirSync(scratchDir, { recursive: true });
+const dataDir = mkdtempSync(join(scratchDir, 'browser-check-data-'));
+const profileDir = mkdtempSync(join(scratchDir, 'browser-check-profile-'));
 mkdirSync(EVIDENCE, { recursive: true });
-mkdirSync(dataDir, { recursive: true });
 
 // Same default path the worker resolves via PATCHDUB_DATA.
 const db = openDb(join(dataDir, 'patchdub.db'));

@@ -1,0 +1,16 @@
+{
+  "name": "patchdub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PatchDub - Tamil subtitle edition maintenance: revision alignment, scoped translation purchase, review and approved WebVTT export.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "worker": "node src/worker-main.ts",
+    "demo": "node scripts/demo.ts",
+    "test": "node --test test/"
+  }
+}

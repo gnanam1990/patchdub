@@ -155,7 +155,7 @@ function renderAlignment(data) {
   for (const g of data.alignment) {
     const actionCell = el('td');
     if (g.status === 'needs_review') {
-      const btn = el('button', { type: 'button', text: 'Resolve…' });
+      const btn = el('button', { type: 'button', class: 'secondary', text: 'Resolve…' });
       btn.addEventListener('click', () => openResolveDialog(g));
       actionCell.append(btn);
     } else {
@@ -289,7 +289,7 @@ function renderPatches(data) {
     if (canReview) {
       const save = el('button', { type: 'button', class: 'secondary', text: 'Save (s)' });
       save.addEventListener('click', () => saveVariant(p, variant.value));
-      const approve = el('button', { type: 'button', class: 'secondary', text: 'Approve (a)' });
+      const approve = el('button', { type: 'button', class: 'primary', text: 'Approve (a)' });
       approve.addEventListener('click', () => reviewPatch(p, 'approve', variant.value));
       const reject = el('button', { type: 'button', class: 'secondary', text: 'Reject (x)' });
       reject.addEventListener('click', () => reviewPatch(p, 'reject', variant.value));

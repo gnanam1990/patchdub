@@ -78,7 +78,7 @@
             <button type="submit">Import</button>
           </fieldset>
         </form>
-        <button id="btn-align" type="button">Compute alignment</button>
+        <button id="btn-align" type="button" class="secondary">Compute alignment</button>
       </section>
 
       <section class="panel" id="panel-align">
@@ -114,7 +114,8 @@
       <section class="panel" id="panel-review">
         <h2>4 · Review</h2>
         <p class="muted">Keyboard: <kbd>j</kbd>/<kbd>k</kbd> next/previous cue, <kbd>e</kbd> edit,
-          <kbd>s</kbd> save, <kbd>a</kbd> approve, <kbd>x</kbd> reject, <kbd>?</kbd> help.</p>
+          <kbd>s</kbd> save, <kbd>a</kbd> approve, <kbd>x</kbd> reject, <kbd>Esc</kbd> leave editor,
+          <kbd>?</kbd> help.</p>
         <table class="grid" id="patch-table">
           <caption class="sr-only">Patch review queue</caption>
           <thead><tr>
@@ -129,7 +130,7 @@
       <section class="panel" id="panel-export">
         <h2>5 · Export</h2>
         <div id="export-box"></div>
-        <button id="btn-draft" type="button">Generate draft preview</button>
+        <button id="btn-draft" type="button" class="secondary">Generate draft preview</button>
         <button id="btn-final" type="button">Generate approved export</button>
         <div id="export-list"></div>
       </section>
@@ -153,7 +154,7 @@
       <label for="in-resolve-reason">Reason</label>
       <input id="in-resolve-reason" required>
       <menu>
-        <button value="cancel">Cancel</button>
+        <button value="cancel" class="secondary">Cancel</button>
         <button id="btn-resolve-ok" value="default">Resolve</button>
       </menu>
     </form>
